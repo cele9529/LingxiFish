@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 凌曦安全钓鱼演练平台</title>
+    <link rel="icon" type="image/x-icon" href="/logo.ico">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        :root {
+            --bg-color: #0a0e17;
+            --surface-color: rgba(28, 30, 39, 0.7);
+            --glass-border: rgba(100, 116, 139, 0.3);
+            --accent-color: #00f6ff;
+            --accent-hover: #67fdff;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --danger-color: #ff4757;
+            --font-family: 'Roboto', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #star-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 500px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 40px;
+            background: var(--surface-color);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-container h1 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            font-size: 1.8em;
+            font-weight: 700;
+            text-shadow: 0 0 5px var(--accent-color), 0 0 10px rgba(0, 246, 255, 0.5);
+        }
+
+        .login-container p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--glass-border);
+            border-radius: 5px;
+            background-color: rgba(10, 14, 23, 0.5);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(0, 246, 255, 0.3);
+        }
+        
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            box-shadow: 0 0 15px rgba(0, 246, 255, 0.3);
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            box-shadow: 0 0 25px rgba(0, 246, 255, 0.6);
+        }
+
+        .error {
+            color: var(--danger-color);
+            margin-bottom: 15px;
+            min-height: 20px;
+            font-weight: bold;
+        }
+
+        .disclaimer {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 71, 87, 0.05);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            border-radius: 8px;
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .disclaimer h3 {
+            color: var(--danger-color);
+            margin-bottom: 10px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .disclaimer ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .disclaimer li {
+            margin: 5px 0;
+        }
+
+        .disclaimer strong {
+            color: var(--text-primary);
+        }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            border: 2px solid var(--danger-color);
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content h2 {
+            color: var(--danger-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .modal-content .disclaimer-text {
+            background: rgba(255, 71, 87, 0.05);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .modal-content .disclaimer-text ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .modal-content .disclaimer-text li {
+            margin: 8px 0;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 246, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 5px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-container label {
+            cursor: pointer;
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn:disabled {
+            background: var(--glass-border);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .modal-btn:not(:disabled) {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px rgba(0, 246, 255, 0.3);
+        }
+
+        .modal-btn:not(:disabled):hover {
+            background: var(--accent-hover);
+            box-shadow: 0 0 25px rgba(0, 246, 255, 0.6);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="star-canvas"></canvas>
+    
+    <!-- 免责声明弹窗 -->
+    <div id="disclaimer-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>⚠️ 免责声明与使用条款</h2>
+            <div class="disclaimer-text">
+                <p style="font-weight: bold; color: var(--danger-color); text-align: center; font-size: 1.1rem; margin-bottom: 15px;">
+                    请仔细阅读以下条款，滚动至底部后方可继续
+                </p>
+                
+                <h3 style="color: var(--accent-color); margin-top: 20px;">一、平台性质</h3>
+                <p>本平台为<strong>凌曦安全钓鱼演练平台</strong>，是专门用于授权网络安全演练和教育培训的工具。</p>
+                
+                <h3 style="color: var(--accent-color); margin-top: 20px;">二、法律约束</h3>
+                <ul>
+                    <li><strong>合法使用：</strong>使用者必须严格遵守《中华人民共和国网络安全法》、《中华人民共和国刑法》第285条、第286条及相关法律法规</li>
+                    <li><strong>授权要求：</strong>任何演练活动必须事先获得目标单位或个人的明确书面授权</li>
+                    <li><strong>演练范围：</strong>仅限在授权范围内进行，不得超出授权内容</li>
+                </ul>
+                
+                <h3 style="color: var(--accent-color); margin-top: 20px;">三、禁止行为</h3>
+                <ul>
+                    <li>严禁将本平台用于任何非法活动或未授权的渗透测试</li>
+                    <li>严禁攻击未经授权的系统、网络或设备</li>
+                    <li>严禁窃取、破坏、篡改他人数据或系统</li>
+                    <li>严禁传播恶意软件或进行钓鱼诈骗</li>
+                    <li>严禁侵犯他人隐私权、知识产权等合法权益</li>
+                </ul>
+                
+                <h3 style="color: var(--accent-color); margin-top: 20px;">四、数据保护</h3>
+                <ul>
+                    <li>演练数据应妥善保管，避免泄露敏感信息</li>
+                    <li>演练结束后应及时清理相关数据</li>
+                    <li>不得将演练数据用于演练目的之外的用途</li>
+                </ul>
+                
+                <h3 style="color: var(--accent-color); margin-top: 20px;">五、责任声明</h3>
+                <ul>
+                    <li><strong>自负后果：</strong>因违法使用本平台造成的一切法律后果由使用者自行承担</li>
+                    <li><strong>平台免责：</strong>平台开发者不对使用者的违法行为承担任何责任</li>
+                    <li><strong>连带责任：</strong>若因使用者违法行为导致平台开发者受损，使用者应承担连带赔偿责任</li>
+                </ul>
+                
+                <h3 style="color: var(--accent-color); margin-top: 20px;">六、教育用途</h3>
+                <p>本平台的设计初衷是帮助企事业单位提升员工的网络安全意识，通过无危害化的演练方式，识别潜在的安全风险，并非用于恶意攻击。</p>
+                
+                <h3 style="color: var(--accent-color); margin-top: 20px;">七、条款同意</h3>
+                <p style="font-weight: bold; color: var(--danger-color);">
+                    点击"我已阅读并同意"按钮即表示您已完整阅读、理解并同意遵守以上所有条款。如有违反，您将承担相应的法律责任。
+                </p>
+                
+                <p style="text-align: center; margin-top: 20px; padding: 10px; background: rgba(255,71,87,0.1); border-radius: 5px;">
+                    <strong>提醒：网络空间非法外之地，请依法依规使用本平台！</strong>
+                </p>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="agree-checkbox">
+                <label for="agree-checkbox">我已完整阅读并同意遵守以上所有条款</label>
+            </div>
+            
+            <button id="continue-btn" class="modal-btn" disabled>继续</button>
+        </div>
+    </div>
+    
+    <div class="login-container hidden" id="login-form-container">
+        <h1>凌曦安全钓鱼演练平台</h1>
+        <p>LINGXI SECURITY | 无危害化钓鱼演练</p>
+        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px; opacity: 0.7;">
+            by Syst1m&nbsp;&nbsp;&nbsp;
+        </p>
+        <div class="error"><%= error || '' %></div>
+        <form class="login-form" method="post">
+            <input type="text" name="username" placeholder="用户名" required autocomplete="off">
+            <input type="password" name="password" placeholder="密码" required autocomplete="current-password">
+            <button type="submit" class="btn">登 录</button>
+        </form>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height, stars = [],
+            count = 200;
+
+        function init() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            stars = [];
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 1.2,
+                    vx: Math.random() * 0.2 - 0.1,
+                    vy: Math.random() * 0.2 - 0.1,
+                    opacity: Math.random() * 0.5 + 0.3
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = 'rgba(226, 232, 240, 0.8)';
+            
+            for (let star of stars) {
+                ctx.globalAlpha = star.opacity;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                star.x += star.vx;
+                star.y += star.vy;
+
+                if (star.x < 0 || star.x > width) star.vx = -star.vx;
+                if (star.y < 0 || star.y > height) star.vy = -star.vy;
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', init);
+        init();
+        draw();
+
+        // 免责声明弹窗逻辑
+        const modal = document.getElementById('disclaimer-modal');
+        const disclaimerText = document.querySelector('.disclaimer-text');
+        const agreeCheckbox = document.getElementById('agree-checkbox');
+        const continueBtn = document.getElementById('continue-btn');
+        const loginContainer = document.getElementById('login-form-container');
+
+        let scrolledToBottom = false;
+
+        // 检测是否滚动到底部
+        disclaimerText.addEventListener('scroll', function() {
+            const isBottom = this.scrollHeight - this.scrollTop <= this.clientHeight + 10;
+            if (isBottom) {
+                scrolledToBottom = true;
+                updateContinueButton();
+            }
+        });
+
+        // 勾选框变化
+        agreeCheckbox.addEventListener('change', function() {
+            updateContinueButton();
+        });
+
+        function updateContinueButton() {
+            continueBtn.disabled = !(scrolledToBottom && agreeCheckbox.checked);
+        }
+
+        // 点击继续按钮
+        continueBtn.addEventListener('click', function() {
+            if (!this.disabled) {
+                modal.classList.add('hidden');
+                loginContainer.classList.remove('hidden');
+                localStorage.setItem('disclaimerAgreed', 'true');
+            }
+        });
+
+        // 检查是否已经同意过
+        if (localStorage.getItem('disclaimerAgreed') === 'true') {
+            modal.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

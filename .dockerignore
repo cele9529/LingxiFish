@@ -1,0 +1,8 @@
+node_modules
+npm-debug.log*
+.idea
+.git
+.gitignore
+*.md
+linggxi/node_modules
+linggxi/temp

@@ -1,0 +1,58 @@
+更新历史：
+在 5.1.1 版本中的更改
+  修正了: 显示多字节字符时编辑器字体不正确
+  修正了: 错误处理 #define 指令
+  修正了: 对话框资源中状态栏对齐方式的错误处理
+  修正了: 在编辑和二进制视图之间交换时行号断开
+  修正了: 相对路径名被破坏
+  修正了: 分析某些 #include 文件时出错报告不正确
+  添加了: 对多行注释 /*... */ 的支持
+  更新了: 现在可以打开和保存非资源类型文件
+  添加了: 上下文帮助中的内部链接
+在 5.0.42 版本中的更改
+  增加了：一个新的菜单资源设计器。
+  更新了：对话框资源设计器进行了重大更新
+  增加了：对每种资源类型可选二进制视图
+  更新了：改进了搜索（使用更多上下文相关的对话框）
+  错误修复：修正了许多错误
+在 4.7.34 版本中的更改
+  更新：显著改进了对话框编辑器。
+  更新：菜单编辑器也有小的更新。
+  修正：保存 RC 文件改为保存编译后的脚本。
+  其他：还有一些其他小的更新和修复。
+在 4.6.32 版本中的更改
+  修正了：修复了从文件中提取 RC 文件的文本资源时的错误命令行(与 Ansi/Unicode 转换有关)。
+  更新了：提取 RC 文件时更加合理地命名二进制文件。
+  修正了：偶尔弹出的菜单资源显示太窄，显示所有菜单项。
+  更新了：其他小修饰更改和修复。
+Changes in 4.5.28
+  Update: Major changes (and improvements) to the commandline syntax
+Changes in 4.5.28
+  Update: Numerous changes and improvements to command line support.
+  Update: Filenames in resource scripts are no longer required to be 
+          enclosed within double quotes unless they contain spaces.
+Changes in 4.4.24
+  Bugfix: The toolbar state wasn't being preserved between sessions
+Changes in 4.3.20
+  Bugfixes: Numerous fixes to commandline processing
+  Bugfixes: Other minor fixes
+Changes in 4.2.5
+  Bugfix: Compiling Delphi form resources was buggy.
+  Bugfix: Adding a resource to a file without any resources was broken
+  New: Can now change a text resource's format (unicode, UTF-8, ANSI)
+Changes in 4.2.4
+  Bugfix: Error when compiling ansi encoded *.rc files 
+	Bugfix: RCDATA resources not displayed in their optimal format
+	Bugfix: Error when trying to display 'compressed' resources
+	Bugfix: 'Compressed' files can no longer be modified and saved
+Changes in 4.2.3
+  Bugfix: Significant bug in the recompiler
+  Bugfix: Minor bug displaying animated cursors
+Changes in 4.2.2
+  Bugfix: Some monochrome images weren't being displayed
+  Bugfix: Removed extraneous button in "Import Resources" dialog
+  Bugfix: Manifest resources were being converted to UCS-2 format.
+  Modified: Increased font sizes in all dialogs
+Changes in 4.2.1 (from 4.2.0)
+  Bugfix: occasional Delphi form was not being decompiled
+  Bugfix: hiding the toolbar disabled hide/show dialogs/menus.

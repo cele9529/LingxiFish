@@ -1,0 +1,10 @@
+{
+  "admin": {
+    "username": "admin",
+    "password": "admin"
+  },
+  "server": {
+    "web_port": 8080,
+    "listener_port": 9090
+  }
+}

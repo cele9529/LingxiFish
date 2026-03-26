@@ -1,0 +1,13 @@
+services:
+  linggxifish:
+    build: .
+    container_name: linggxifish
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    volumes:
+      - ./linggxi/config.json:/app/config.json
+      - ./linggxi/data.json:/app/data.json
+      - ./linggxi/screenshots:/app/screenshots
+      - ./linggxi/uploads:/app/uploads
