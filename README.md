@@ -1,5 +1,8 @@
 <h1 align="center" >凌曦安全无害化钓鱼演练平台</h1>
 
+
+![LingxiFish](https://socialify.git.ci/lingxisec/LingxiFish/image?description=1&font=KoHo&forks=1&issues=1&language=1&name=1&owner=1&pattern=Solid&stargazers=1&theme=Dark)
+
 <div align="center">
 
   **凌曦安全无害化钓鱼演练平台**
